@@ -1,0 +1,49 @@
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        n = len(nums)
+        if n == 1:
+            if nums[0] == target:
+                return 0
+            else:
+                return -1
+        low = self.find_min_idx(nums)
+        # disclaimer: might be over n so mod them
+        high = (low + n - 1)
+        while low <= high:
+            mid = (low + high) // 2
+            if nums[mid % n] > target:
+                high = mid - 1
+            elif nums[mid % n] < target:
+                low = mid + 1
+            else:
+                return mid % n
+        return -1
+
+    def find_min_idx(self, nums: List[int]) -> int:
+        if len(nums) == 1:
+            return 0
+        n = len(nums)
+        l_idx = 0
+        h_idx = n // 2 if n // 2 > 0 else 1
+
+
+        while True:
+            # check left and right for rift
+            if nums[h_idx - 1] > nums[h_idx]:
+                return h_idx
+            if nums[(h_idx + 1) % n] < nums[h_idx]:
+                return (h_idx + 1) % n
+            step = (h_idx - l_idx) // 2
+            # rift occurs in first half
+            if nums[l_idx] > nums[h_idx]:
+                if step < 1:
+                    h_idx = max(h_idx - 1, 0)
+                    continue
+                h_idx = h_idx - step
+            # rift occurs in second half
+            else:
+                l_idx = h_idx
+                if step < 1:
+                    h_idx = min(h_idx + 1, n - 1)
+                    continue
+                h_idx = h_idx + step
